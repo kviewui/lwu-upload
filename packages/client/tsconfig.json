@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+      "baseUrl": ".",
+      "strict": true,
+      "target": "ES2015",
+      "module": "ESNext",
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "lib": [
+          "ESNext",
+          "DOM"
+      ],
+      "outDir": "dist",
+      "types": [
+          "@dcloudio/types",
+          "node"
+      ],
+  },
+  "include": [
+      "src/**/*.ts",
+      "index.ts"
+  ],
+  "exclude": [
+      "./dist"
+  ],
+  "ts-node": {
+      "compilerOptions": {
+          "module": "CommonJS",
+          "types": [
+              "@dcloudio/types",
+              "node"
+          ]
+      }
+  }
+}

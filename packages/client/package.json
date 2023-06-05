@@ -1,0 +1,25 @@
+{
+  "name": "lwu-upload",
+  "version": "1.0.0",
+  "description": "一个轻量级的文件上传工具库",
+  "main": "dist/index.js",
+  "module": "dist/esm/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kviewui@163.com",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "homepage": "https://lwuu.fdproxy.cn",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kviewui/lwu-upload"
+  },
+  "bugs": {
+    "url": "https://github.com/kviewui/lwu-upload/issues"
+  }
+}
