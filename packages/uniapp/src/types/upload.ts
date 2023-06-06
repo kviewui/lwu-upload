@@ -24,7 +24,7 @@ export interface UploadParams {
   /**
    * 要上传文件资源的路径。
    */
-  filePath?: string;
+  filePath: string;
   /**
    * 文件对应的 key , 开发者在服务器端通过这个 key 可以获取到文件二进制内容
    */
@@ -55,7 +55,19 @@ export interface UploadParams {
   complete?: (result: UniApp.GeneralCallbackResult) => void;
   /**
    * 自定义请求域名
-   * + 设置该参数后，本次请求时全局配置的 `baseUrl` 将失效
+   * + 设置该参数后，本次请求时全局配置的 `baseURI` 将失效
    */
   domain?: string;
+  /**
+   * 自定义请求前拦截
+   */
+  before?: Function;
+  /**
+   * 自定义请求后拦截
+   */
+  after?: Function;
+  /**
+   * 文件保存后缀名，默认为 `png`
+   */
+  saveSuffixName?: string;
 };

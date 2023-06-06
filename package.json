@@ -5,14 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs:dev": "vitepress dev docs",
+    "docs:dev": "vitepress dev docs --port 5275",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "build:uni": "cd packages/uniapp && tsup --config ./tsup.config.ts"
   },
   "author": "",
   "license": "ISC",
+  "private": "true",
   "devDependencies": {
     "@dcloudio/types": "^3.3.3",
+    "@types/node": "^20.2.5",
     "vitepress": "1.0.0-beta.1"
+  },
+  "dependencies": {
+    "tsup": "^6.7.0",
+    "typescript": "^5.1.3"
   }
 }
