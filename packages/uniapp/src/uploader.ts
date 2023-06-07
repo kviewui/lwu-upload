@@ -143,7 +143,7 @@ export class Uploader {
 
     await oosUploader.getOOSByACInfo();
 
-    return await oosUploader.uploadFile(options.filePath, options.uploadDir, options);
+    return await oosUploader.uploadFile(options.filePath, options.uploadDir, options, 'uploadOOSSync');
   }
 
   /**
@@ -159,8 +159,12 @@ export class Uploader {
       ...this.reqConfig
     });
 
+    return new Promise((resolve, reject) => {
+      
+    });
+
     oosUploader.getOOSByACInfo().then(() => {
-      return oosUploader.uploadFile(options.filePath, options.uploadDir, options);
+      return oosUploader.uploadFile(options.filePath, options.uploadDir, options, 'uploadOOS');
     })
   }
 }

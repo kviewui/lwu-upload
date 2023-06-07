@@ -2,15 +2,15 @@
 outline: deep
 ---
 
-# setHeader <Badge type="info" text="未发布" />
+# setFormData <Badge type="info" text="未发布" />
 
-设置请求头信息
+设置请求中额外的 `form data` 内容。
 
 ## 使用示例
 ### 基本使用
 ```ts
-uploader.setHeader({
-  test: 222,
+uploader.setFormData({
+  signature: 'CF8AE103-7C09-8ADF-9902-78665AFF5D7D',
 });
 ```
 

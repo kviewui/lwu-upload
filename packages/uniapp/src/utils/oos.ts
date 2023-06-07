@@ -1,5 +1,6 @@
 import type { GetOOSByACSuccessCallback, UploadOOSOptions, GeneralCallbackResult, Config } from '../types';
 import { isImage } from '../utils';
+import { Buffer } from 'buffer';
 
 class UploadOOS {
     /**
@@ -42,7 +43,8 @@ class UploadOOS {
      * 构造函数
      * @param options 上传配置项
      */
-    constructor(options?: UploadOOSOptions, config?: Config) {
+    constructor(options: UploadOOSOptions, config?: Config) {
+        console.log(config, '请求配置');
         this.config = config;
         this.options = options;
         this.timeout = options?.timeout || 1;
@@ -51,10 +53,24 @@ class UploadOOS {
         this.accessKeyId = '';
         this.accessKeySecret = '';
         this.uploadDir = options?.uploadDir || '';
-        this.uploadImageUrl = options?.uploadImageUrl || '';
-        this.formData = options?.formData || {};
+        let url = '';
+        url = config?.baseURI.pro || '';
+        if (process.env.NODE_ENV !== 'development') {
+            url = config?.baseURI.dev || '';
+        }
+        this.uploadImageUrl = options?.uploadImageUrl || url;
+        this.formData = {
+            ...config?.formData,
+            ...options.formData
+        };
         this.getOOSByAC = () => options?.getOOSByAC() as Promise<GetOOSByACSuccessCallback>;
-        this.getPolicyBase64 = () => options?.getPolicyBase64() as string;
+        this.getPolicyBase64 = () => {
+            if (options.getPolicyBase64) {
+                return options.getPolicyBase64() as string;
+            }
+
+            return '';
+        }
     }
 
     async getSignature(policy: string, accessKeySecret: string, options: UploadOOSOptions): Promise<string> {
@@ -72,11 +88,31 @@ class UploadOOS {
         this.securityToken = securityToken;
     }
 
+    async getDocs() {
+        return (await import('../../package.json')).homepage;
+    }
+
+    getPolicyBase64Res() {
+        let date = new Date();
+        // 设置过期时间
+        date.setHours(date.getHours() + this.timeout);
+        let srcT = date.toISOString();
+        const policyText = {
+            expiration: srcT,
+            conditions: [
+                // 限制上传文件大小
+                ["content-length-range", 0, this.maxSize * 1024 * 1024],
+            ],
+        };
+
+        return Buffer.from(JSON.stringify(policyText)).toString('base64');
+    }
+
     /**
      * 获取上传参数
      */
     async getUploadParams() {
-        const policy: string = this.getPolicyBase64();
+        const policy: string = this.getPolicyBase64Res();
         const signature = await this.getSignature(policy, this.accessKeySecret, this.options);
 
         return {
@@ -88,12 +124,15 @@ class UploadOOS {
         };
     }
 
-    uploadFile(filePath: string, dir?: string, options?: UploadOOSOptions): Promise<GeneralCallbackResult> {
+    uploadFile(filePath: string, dir?: string, options?: UploadOOSOptions, apiName?: string): Promise<GeneralCallbackResult> {
         return new Promise(async (resolve, reject) => {
+            const docs = `${await this.getDocs()}/api/${apiName}.html#请求参数`;
+
             if (!filePath) {
                 reject({
                     code: 1,
-                    msg: '文件路径不能为空'
+                    msg: '文件路径不能为空',
+                    docs: docs
                 });
                 return;
             }
@@ -103,18 +142,31 @@ class UploadOOS {
             if (!dirPath) {
                 reject({
                     code: 1,
-                    msg: '上传目录不能为空'
+                    msg: '上传目录不能为空，请检查 `uploadDir` 参数是否设置',
+                    docs: docs
                 });
+                return;
             }
 
             if (!this.uploadImageUrl) {
                 reject({
                     code: 1,
-                    msg: '上传服务器域名或上传的第三方OOS地址不能为空'
+                    msg: '上传服务器域名或上传的第三方OOS地址不能为空，请检查 `uploadImageUrl` 参数或 `baseURI` 全局参数是否设置 ',
+                    docs: docs
                 });
+                return;
             }
 
             const suffix = isImage(filePath) ? filePath.split('.').pop() : options?.saveSuffixName;
+
+            if (!suffix) {
+                reject({
+                    code: 1,
+                    msg: '文件保存后缀不能为空，请检查 `saveSuffixName` 参数是否设置',
+                    docs: docs
+                });
+                return;
+            }
 
             let fileName = `${Date.now()}_${Math.floor(Math.random() * 1000000)}.${suffix}`;
             if (options?.genarateFileName) {
@@ -137,7 +189,7 @@ class UploadOOS {
                 formData: {
                     ...formData
                 },
-                fail: (res: any) => {
+                fail: async (res: any) => {
                     if (this.config && this.config.debug) {
                         console.warn(`【LwuUpload Debug:第三方oos返回结果】${JSON.stringify(res)}`);
                     }
@@ -145,7 +197,8 @@ class UploadOOS {
                         reject({
                             code: 1,
                             msg: '上传失败，请稍后再试',
-                            data: res.data
+                            data: res.data,
+                            docs: await this.getDocs()
                         });
                         return;
                     }
@@ -159,7 +212,8 @@ class UploadOOS {
                     uploadTask: uploadTask,
                     url: fileUrl,
                     path: `/${dirPath}/${fileName}`
-                }
+                },
+                docs: await this.getDocs()
             });
         });
     }

@@ -172,7 +172,7 @@ interface UploadOOSOptions {
      * 上传的第三方OOS地址
      * + 小程序后台需要同步添加上传合法域名
      */
-    uploadImageUrl: string;
+    uploadImageUrl?: string;
     /**
      * HTTP 请求中其他额外的 form data
      */
@@ -184,7 +184,7 @@ interface UploadOOSOptions {
     /**
      * 获取签名的base64字符串
      */
-    getPolicyBase64: () => string;
+    getPolicyBase64?: () => string;
     /**
      * 获取第三方OOS签名
      */
@@ -206,6 +206,7 @@ interface GeneralCallbackResult {
         path: string;
     };
     msg: string;
+    docs?: string;
 }
 
 declare class Uploader {

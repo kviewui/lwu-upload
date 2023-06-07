@@ -19,6 +19,7 @@
     "vitepress": "1.0.0-beta.1"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "tsup": "^6.7.0",
     "typescript": "^5.1.3"
   }

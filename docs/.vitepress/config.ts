@@ -31,7 +31,8 @@ export default defineConfig({
           { text: '介绍', link: '/intro' },
           { text: '快速上手', link: '/start' },
           { text: '更新日志', link: '/changelog' },
-          { text: '常见问题', link: '/faq' }
+          { text: '常见问题', link: '/faq' },
+          { text: '名词解释', link: '/definition' }
         ]
       },
       {

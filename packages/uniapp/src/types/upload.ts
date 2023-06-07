@@ -6,7 +6,7 @@ export interface Files {
 
 export interface UploadParams {
   /**
-   * 开发者服务器 url
+   * 上传接口地址
    */
   url: string;
   /**
