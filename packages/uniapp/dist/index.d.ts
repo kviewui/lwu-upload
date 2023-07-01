@@ -5,7 +5,7 @@ interface Files {
 }
 interface UploadParams {
     /**
-     * 开发者服务器 url
+     * 上传接口地址
      */
     url: string;
     /**
@@ -248,7 +248,7 @@ declare class Uploader {
      * 第三方oos直传，异步上传
      * @param options
      */
-    uploadOOS(options: UploadOOSOptions): void;
+    uploadOOS(options: UploadOOSOptions): Promise<unknown>;
 }
 
 export { Config, Files, GeneralCallbackResult, GetOOSByACSuccessCallback, UploadOOSOptions, UploadParams, Uploader };

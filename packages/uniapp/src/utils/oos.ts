@@ -1,5 +1,5 @@
 import type { GetOOSByACSuccessCallback, UploadOOSOptions, GeneralCallbackResult, Config } from '../types';
-import { isImage } from '../utils';
+import { isImage, loading } from '../utils';
 import { Buffer } from 'buffer';
 
 class UploadOOS {
@@ -124,7 +124,8 @@ class UploadOOS {
         };
     }
 
-    uploadFile(filePath: string, dir?: string, options?: UploadOOSOptions, apiName?: string): Promise<GeneralCallbackResult> {
+    uploadFile(filePath: string, dir?: string, options?: UploadOOSOptions, config?: Config, apiName?: string): Promise<GeneralCallbackResult> {
+        console.log(config, '全局配置信息');
         return new Promise(async (resolve, reject) => {
             const docs = `${await this.getDocs()}/api/${apiName}.html#请求参数`;
 
@@ -157,7 +158,7 @@ class UploadOOS {
                 return;
             }
 
-            const suffix = isImage(filePath) ? filePath.split('.').pop() : options?.saveSuffixName;
+            const suffix = isImage(filePath) ? filePath.split('.').pop() : (options?.saveSuffixName ?? config?.saveSuffixName);
 
             if (!suffix) {
                 reject({
@@ -182,38 +183,61 @@ class UploadOOS {
                 ...this.formData
             };
 
+            config?.loading && loading({ title: config?.loadingText as string });
+
             const uploadTask = uni.uploadFile({
                 url: this.uploadImageUrl,
                 filePath: filePath,
                 name: 'file',
+                timeout: config?.timeout ?? options?.timeout,
                 formData: {
                     ...formData
+                },
+                complete: () => {
+                    uni.hideLoading();
                 },
                 fail: async (res: any) => {
                     if (this.config && this.config.debug) {
                         console.warn(`【LwuUpload Debug:第三方oos返回结果】${JSON.stringify(res)}`);
+                    }
+                    // 上传超时判断
+                    if (res.errMsg === 'uploadFile:fail timeout') {
+                        reject({
+                            code: 504,
+                            msg: '上传超时，请检查上传配置 `timeout`',
+                            data: res.data,
+                            docs
+                        });
+                        return;
                     }
                     if (res.statusCode !== 200) {
                         reject({
                             code: 1,
                             msg: '上传失败，请稍后再试',
                             data: res.data,
-                            docs: await this.getDocs()
+                            docs
                         });
                         return;
                     }
-                }
-            });
-
-            resolve({
-                code: 0,
-                msg: 'success',
-                data: {
-                    uploadTask: uploadTask,
-                    url: fileUrl,
-                    path: `/${dirPath}/${fileName}`
+                    reject({
+                        code: 1,
+                        msg: res.errMsg,
+                        data: res.data,
+                        docs
+                    })
                 },
-                docs: await this.getDocs()
+                success: async () => {
+                    resolve({
+                        code: 0,
+                        msg: 'success',
+                        data: {
+                            uploadTask: uploadTask,
+                            url: fileUrl,
+                            path: `/${dirPath}/${fileName}`
+                        },
+                        docs
+                    });
+                }
             });
         });
     }

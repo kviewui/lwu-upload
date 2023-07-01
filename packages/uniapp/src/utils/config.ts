@@ -16,21 +16,13 @@ export const useConfig = (config: Config) => {
          */
         loadingText: config.loadingText ?? '上传中...',
         /**
-         * 自定义请求前拦截
-         */
-        before: config.before,
-        /**
-         * 自定义请求后拦截
-         */
-        after: config.after,
-        /**
          * 自定义请求头信息
          */
         header: config.header ?? {},
         /**
          * 请求超时时间，单位ms
          */
-        timeout: config.timeout ?? 60000,
+        timeout: config.timeout ?? 0,
         /**
          * 文件对应的 key , 开发者在服务器端通过这个 key 可以获取到文件二进制内容，默认为 `file`
          */
