@@ -22,7 +22,7 @@ export const useConfig = (config: Config) => {
         /**
          * 请求超时时间，单位ms
          */
-        timeout: config.timeout ?? 0,
+        timeout: config.timeout ?? 6000,
         /**
          * 文件对应的 key , 开发者在服务器端通过这个 key 可以获取到文件二进制内容，默认为 `file`
          */

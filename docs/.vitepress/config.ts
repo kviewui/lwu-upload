@@ -50,7 +50,7 @@ export default defineConfig({
         text: '配置',
         items: [
           { text: '全局配置', link: '/config/global' },
-          { text: '请求配置', link: '/config/request' }
+          // { text: '请求配置', link: '/config/request' }
         ]
       },
       {
